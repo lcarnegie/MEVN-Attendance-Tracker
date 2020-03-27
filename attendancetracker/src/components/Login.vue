@@ -1,37 +1,52 @@
 <template>
-    <div class="login-box">
+    <div class="login">
       <h1 class="title">Login</h1>
       <div class="field">
-      <label class="label">Name</label>
+      <label class="label">Username</label>
         <div class="control">
-           <input class="input" type="text" placeholder="e.g Alex Smith">
-        </div>
+           <input class="input" type="text" placeholder="e.g Alex Smith" name="username">
+        </div> 
       </div>
-
     <div class="field">
-      <label class="label">Email</label>
+      <label class="label">Password</label>
       <div class="control">
-        <input class="input" type="email" placeholder="e.g. alexsmith@gmail.com">
+        <input class="input" type="password" placeholder="e.g. alexsmith@gmail.com" name="password">
       </div>
     </div>
+    <div class="login-button">
+      <div class="control">
+          <button @click="add()">Click Me</button>
       </div>
+    </div>
+  </div>
   </template>
+
+  <style>
+  .field {
+    width: 50%; 
+    font-family: 
+  }
+  
+  </style>
 
   <script>
     export default {
-        data(){
-        return {
-          post:{}
-        }
-    },
-    methods: {
-      login(){
-          let uri = 'http://localhost:4000/posts/add';
-          this.axios.post(uri, this.post).then(() => {
-          this.$router.push({name: 'posts'});
-      });
+
+        methods: {
+          data() {
+            return {
+              post: {}
+            }
+          },
+            add(){
+            let uri = 'http://localhost:4000/login/post';
+            this.axios.post(uri, this.post).then(() => {
+            this.$router.push({username: 'username'});
+            this.$router.push({password: 'password'});
+            });
 }
+
+            
+        }
     }
-  }
-</script>
-  
+  </script>

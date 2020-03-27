@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>Johnny is horrible </h1>
+    <h1>Johnny is horribl</h1>
     <p>
       For a guid:e and recipes on how to configure / customize this project,<br>
       check out the

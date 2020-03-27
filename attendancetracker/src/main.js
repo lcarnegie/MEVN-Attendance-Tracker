@@ -1,6 +1,12 @@
 import Vue from 'vue'
 import App from './App.vue'
 import Buefy from 'buefy'
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+
+// Install BootstrapVue
+Vue.use(BootstrapVue)
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin)
 
 Vue.use(Buefy)
 Vue.config.productionTip = false
@@ -16,6 +22,7 @@ Vue.config.productionTip = false;
 
 import HelloWorld from './components/HelloWorld.vue';
 import Login from './components/Login.vue';
+import Home from './components/Home.vue';
 
 const routes = [
   {
@@ -27,6 +34,11 @@ const routes = [
       name: 'login',
       path: '/login',
       component: Login
+  },
+  {
+    name: 'calendar',
+    path: '/calendar',
+    component: Home
   }
 ];
 
