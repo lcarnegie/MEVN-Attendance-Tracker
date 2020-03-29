@@ -1,22 +1,50 @@
 const express = require('express');
-const loginRoute = expressRouter();
+const loginRoute = express.Router();
 
 let LInfo = require('./user.model');
 
-postRoutes.route('/login').post(function (req, res) {
-    console.log(req);
-    var user = req.body.username;
-    var pass = req.body.password;
-      LInfo.findOne(
-        {
-            and: [{username: user}, {password: pass}]
-        },
+loginRoute.route('/add').post(function (req, res) {
+  console.log(req.body);
+  var username = req.body.user;
+  LInfo.findOne({user: username},
+    function(err, user){
+      console.log(user);
+  if(user == null){
+    let post = new LInfo(req.body);  
+    console.log(post);
+    post.save()
+    .then(() => {
+      res.status(200).send("Account added successfully");
+    })
+    .catch(() => {
+      res.status(400).send("Unable to save to database");
+    });
+  }
+  else {
+    res.json(user);
+    console.log("user");
+  }
+});
+});
+
+loginRoute.route('/post').post(function (req, res) {
+    //console.log(req);
+    //console.log(res);
+    var username = req.body.user;
+    var password = req.body.pass;
+    console.log(username);
+    console.log(password);
+      LInfo.findOne({user: username, pass: password},
         function(err, user){
-      if(err){
-        res.json(err);
+          console.log(user);
+      if(!user){
+        res.json(null);
+        console.log("err");
       }
       else {
         res.json(user);
+        console.log("user");
       }
     });
   });
+module.exports = loginRoute;

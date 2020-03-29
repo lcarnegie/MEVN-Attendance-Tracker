@@ -20,25 +20,24 @@ import axios from 'axios';
 Vue.use(VueAxios, axios);
 Vue.config.productionTip = false;
 
-import HelloWorld from './components/HelloWorld.vue';
 import Login from './components/Login.vue';
-import Home from './components/Home.vue';
-
+import Calendar from './components/Calendar.vue';
+import Register from './components/Register.vue';
 const routes = [
   {
-      name: 'home',
-      path: '/',
-      component: HelloWorld
-  },
-  {
       name: 'login',
-      path: '/login',
+      path: '/',
       component: Login
   },
   {
     name: 'calendar',
     path: '/calendar',
-    component: Home
+    component: Calendar
+  },
+  {
+    name: 'Register',
+    path: '/register',
+    component: Register
   }
 ];
 

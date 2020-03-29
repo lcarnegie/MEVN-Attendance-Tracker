@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="add">
     <div class="login">
-      <h1 class="title">Login</h1>
+      <h1 class="title">Register</h1>
       <div class="field">
       <label class="label">Username</label>
         <div class="control">
@@ -40,16 +40,13 @@
           },
         methods: {
             add(){
-            let uri = 'http://65.92.152.100:4000/login/post';
+            let uri = 'http://65.92.152.100:4000/login/add';
             this.axios.post(uri, this.post).then(res => {
-              if(!res.data){
-                alert("Incorrect Username/Password");
+              if(!res.data.user){
+                alert("Success! Account Created!");
+                this.$router.push({name: ''});
               }else{
-                this.$router.push({name: 'account'});
-                console.log(res.data);
-                alert("Username: " + res.data.user);
-                alert("Password: " + res.data.pass);
-                document.cookie = "user="+res.data.user;
+               alert("That Username Already Exists!");
               }
             });
             }

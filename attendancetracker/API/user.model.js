@@ -1,17 +1,15 @@
-    const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const Schema  = mongoose.Schema;
 
 let LInfo = new Schema({
-    username: { type: String, unique: true, required: true },
-    hash: { type: String, required: true },
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    user: { type: String, unique: true, required: true },
+    pass: { type: String, required: true },
+    firstName: { type: String, required: false },
+    lastName: { type: String, required: false },
     createdDate: { type: Date, default: Date.now }
 },{
-    collection: 'users'
+    collection: 'users1'
 }
-)
+);
 
-schema.set('toJSON', {virtuals: true});
-
-module.exports = mongoose.model('User', schema);
+module.exports = mongoose.model('User', LInfo);
