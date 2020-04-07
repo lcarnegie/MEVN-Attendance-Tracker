@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div id="page">
   <transition name="fade">
     <router-view></router-view>
   </transition>
@@ -15,6 +15,18 @@ font-family: 'Avenir', Helvetica, Arial, sans-serif;
 text-align: center;
 color: #2c3e50;
 margin-top: 60px;
+background-color: #f1f5f2;
+}
+
+#page{
+  background-color: #f1f5f2;
+}
+
+html{
+    background-color: #f1f5f2;
+}
+body{
+  background-color: #f1f5f2;
 }
 </style>
 

@@ -73,4 +73,13 @@ let Att = require('./attendee.model');
   });
 });
 
+attendanceRoute.route('/delete').post(function (req, res) {
+  //console.log(req.body.id);
+  Att.findByIdAndRemove({_id: req.body.id}, function(err){
+      if(err) res.json(err);
+      else res.json('Successfully removed');
+  });
+});
+
+
 module.exports = attendanceRoute;

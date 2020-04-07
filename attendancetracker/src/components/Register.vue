@@ -5,7 +5,7 @@
         <div class="login-form">
           <h1 class="title">Register</h1>
           <div class="field">
-          <label class="label">Username</label>
+          <label class="label">Club Name (No spaces)</label>
             <div class="control">
               <input type="text" v-model="post.user" class="text-input">
             </div> 
@@ -27,7 +27,7 @@
         </div>
         <div class="login-button">
           <div class="control">
-              <button class="buttone" style="width: 55%"><span>Create Account</span></button><a href="/" class="buttone button" style="color: white; width: 25%"><span>Login</span></a>
+              <button class="buttone" style="width: 60%"><span>Create Account</span></button><a href="/" class="buttone button" style="color: white; width: 30%"><span>Login</span></a>
         </div>
         </div> 
       </div>
@@ -169,7 +169,7 @@ input:focus {
               console.log(res);
               if(!res.data.user){
                 alert("Success! Account Created!");
-                this.$router.push({name: ''});
+                this.$router.push({name: '/'});
               }else{
                 alert("Error username already in use!")
               }

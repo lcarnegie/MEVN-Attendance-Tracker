@@ -1,12 +1,88 @@
 <template>
+    <div v-if="attendees.length == 0" id="none">
+    <div>
+  <b-navbar toggleable="lg" type="light" variant="light">
+    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker®</b-navbar-brand>
 
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
+        <b-nav-item href="/calendar">Calendar</b-nav-item>
+        <b-nav-item-dropdown text="Insights">
+          <b-dropdown-item href="/insights/id">By Join Date</b-dropdown-item>
+          <b-dropdown-item href="/insights/presences">By Presences</b-dropdown-item>
+          <b-dropdown-item href="/insights/absences">By Absences</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <b-nav-item href="/attendees">Manage Club Members</b-nav-item>
+      </b-navbar-nav>
+
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">       
+
+        <b-nav-item-dropdown right>
+          <!-- Using 'button-content' slot -->
+          <template v-slot:button-content>
+            <em>{{user}}</em>
+          </template>
+          <b-dropdown-item @click.prevent="logout">Sign Out</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+</div>
+
+
+      <h1 id="title">Attendance for {{this.$route.params.id}}</h1>
+      <center>You have no members yet! Create some to take attendance.
+      <br>
+      Chart Loading Please wait...
+      </center>
+
+    </div>
+        <div v-else>
     <div id="whole-page">
-      <h1 id="title">Attendance</h1> 
+
+    <div>
+  <b-navbar toggleable="lg" type="light" variant="light">
+    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker®</b-navbar-brand>
+
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
+        <b-nav-item href="/calendar">Calendar</b-nav-item>
+        <b-nav-item-dropdown text="Insights">
+          <b-dropdown-item href="/insights/id">By Join Date</b-dropdown-item>
+          <b-dropdown-item href="/insights/presences">By Presences</b-dropdown-item>
+          <b-dropdown-item href="/insights/absences">By Absences</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <b-nav-item href="/attendees">Manage Club Members</b-nav-item>
+      </b-navbar-nav>
+
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">       
+
+        <b-nav-item-dropdown right>
+          <!-- Using 'button-content' slot -->
+          <template v-slot:button-content>
+            <em>{{user}}</em>
+          </template>
+          <b-dropdown-item @click.prevent="logout">Sign Out</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+</div>
+
+
+      <h1 id="title">Attendance for {{this.$route.params.id}}</h1> 
+      <center style="padding-bottom: 1vh; ">*Note: changes are denoted by a darker coloured row.
+  </center>
         <div class="attendance">    
          <table id="presences">
          <tr style="border: none">
          <td colspan="3" style="border: none; padding: 5px;">
-         <center>Changes are denoted by a coloured row.</center>
          </td>
          </tr>
           <tr>
@@ -19,10 +95,16 @@
               <input type="hidden" :value="attendee.id"> 
               <td class="name" :id="attendee._id + ':n'">{{ attendee.name }}</td>
               <td class="present presentcheckbox" :id="attendee._id + ':pcheckbox'">
+                  <label class="container">
                   <input type="checkbox" :value="attendee._id" v-model="presentNames" :id="attendee._id + ':p'" @click="test(attendee._id, 'p', $event)">
+                  <span class="checkmark"></span>
+                  </label> 
               </td>
               <td class="absent absentcheckbox" :id="attendee._id + ':acheckbox'" >
+                  <label class="container">
                   <input type="checkbox" :value="attendee._id" v-model="absentNames" :id="attendee._id + ':a'" @click="test(attendee._id, 'a', $event)">
+                  <span class="checkmark"></span>
+                  </label> 
               </td>
             </tr>
           </tbody>
@@ -36,17 +118,31 @@
         </table>
         </div>
     </div>
+    </div>
 </template>
 
 
 <style scoped>
   #whole-page {
     font-family: Open Sans, 'Source Sans Pro', sans-serif;
-    height: 100vh; 
-    width: 100vw; 
-    padding: 0; 
-    margin: 0; 
+    height: 100vh;
+    width: auto;
+    padding: 0;
+    margin: 0;
     background-color: #f1f5f2;
+    background-attachment: fixed;
+
+  }
+
+  #none {
+    font-family: Open Sans, 'Source Sans Pro', sans-serif;
+    height: 100vh;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    background-color: #f1f5f2;
+    background-attachment: fixed;
+
   }
 
   #title{
@@ -60,7 +156,7 @@
     border-collapse: collapse; 
     width: 50%; 
     position: absolute; 
-    left: 35vw; 
+    left: 25vw; 
     background-color: white; 
     border-radius: 10px; 
   }
@@ -90,7 +186,11 @@
   }
 
   .presentcheckbox {
-    background-color: 
+    background-color: #6CD182; 
+  }
+
+  .absentcheckbox {
+    background-color: #FF7F7F; 
   }
 
   .buttone {
@@ -99,23 +199,23 @@
   }
 
   .buttone button {
-    background-color: #98c1d9; 
-    border: 1px #98c1d9; 
+    background-color: #3D5A80; 
+    border: 1px #3D5A80; 
     border-radius: 5px; 
     padding: 1vh; 
     padding-left: 2vh; 
     padding-right: 2vh; 
-    color: #F7FFFB;
+    color: white;
     font-family: Roboto, Open Sans, sans-serif;  
   }
 
   .buttone button:hover {
-    background-color: #A4D0EA; 
+    background-color: #293D56;
   }
-
 </style>
   
   <script>
+  
 
     export default {
         mounted() {
@@ -140,9 +240,15 @@
             }
             
           }
+          
           //console.log(this.presentNames);
         });
       }
+        },
+        updated(){
+          var body = document.body, html = document.documentElement;
+          var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+          document.getElementById("whole-page").style.height = height + "px";
         },
       data() {
         return {
@@ -152,10 +258,17 @@
           presentNames: [],
           checked: true,
           post: {},
-          user: null
+          user: null,
+          dismissSecs: 10,
+          dismissCountDown: 0,
+          showDismissibleAlert: false
         }
       },
       methods: {
+        logout() {
+            document.cookie = "user= ; expires=Sun, 29 Dec 2019 00:00:00 UTC; path=/;";
+            this.$router.push({name: 'login'});
+        },
         postAttendance(){
           //iterate through all present, then all absent, and get array of that id user, then check for the current day, if it contains delete, and append the date to the correct array
           for(var element of this.presentNames){
@@ -214,7 +327,7 @@
               arrr = arrr.filter(e => e !== this.$route.params.id);
               //console.log(arrr);
               
-              var arrr2 = res.data.presences;
+              var arrr2 = res.data.presences; 
               arrr2 = arrr2.filter(e => e !== this.$route.params.id);
 
               
@@ -242,19 +355,15 @@
             //console.log(this.presentNames);
             letter = "p";
             document.getElementById(input + ":acheckbox").style.backgroundColor = "red";
-            document.getElementById(input + ":pcheckbox").style.backgroundColor = "#f2f2f2";
+            document.getElementById(input + ":pcheckbox").style.backgroundColor = "#6CD182";
           }else{
             this.absentNames = this.absentNames.filter(e => e !== input);
             
             document.getElementById(input + ":pcheckbox").style.backgroundColor = "green";
-            document.getElementById(input + ":acheckbox").style.backgroundColor = "#f2f2f2";
-            letter = "a";
+            document.getElementById(input + ":acheckbox").style.backgroundColor = "#FF7F7F";
+            letter = "a"; 
           }
           document.getElementById(input + ":" + letter).checked = false;
-          
-
-          
-          
         }
         }
       } 

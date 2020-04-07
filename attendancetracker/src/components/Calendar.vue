@@ -1,119 +1,108 @@
 <template>
 
-    <div id="page">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
+    <div id="whole-page">
+      
 
-            <button type="button" id="sidebarCollapse" class="btn btn-info">
-                <i class="fas fa-align-left"></i>
-                <span>Toggle Sidebar</span>
-            </button>
+      <div>
+  <b-navbar toggleable="lg" type="light" variant="light">
+    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker®</b-navbar-brand>
 
-        </div>
-    </nav>
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-        <h1>Welcome, {{user}}</h1>
-        
-        <form @submit.prevent="att">
-        <div id="cal">
-       <b-calendar v-model="value" locale="en-US" class="cal" selected-variant="danger" width="150vh" hide-header></b-calendar> 
-        </div>
-        <button class="btn btn-primary">Take/View Attendance</button>
-        </form>
-  
-<!-- Trigger/Open The Modal -->
-<h2>Modal Example</h2>
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
+        <b-nav-item href="/calendar">Calendar</b-nav-item>
+        <b-nav-item-dropdown text="Insights">
+          <b-dropdown-item href="/insights/id">By Join Date</b-dropdown-item>
+          <b-dropdown-item href="/insights/presences">By Presences</b-dropdown-item>
+          <b-dropdown-item href="/insights/absences">By Absences</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <b-nav-item href="/attendees">Manage Club Members</b-nav-item>
+      </b-navbar-nav>
 
-<!-- Trigger/Open The Modal -->
-<form @submit.prevent="btnClick">
-<button id="myBtn">Open Modal</button>
-</form>
-<!-- The Modal -->
-<div id="myModal" class="modal">
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">       
 
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close" @click="spanClick">&times;</span>
-    <p>Some text in the Modal..</p>
-  </div>
-
+        <b-nav-item-dropdown right>
+          <!-- Using 'button-content' slot -->
+          <template v-slot:button-content>
+            <em>{{user}}</em>
+          </template>
+          <b-dropdown-item @click.prevent="logout">Sign Out</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
 </div>
 
-  
-  <form @submit.prevent="logout">
-    <button id="logout"> Log Out </button> 
-  </form>
-
-
-  <form @submit.prevent="addUser">
-    <input type="text" id="name" v-model="attendee.name">
-    <button>Add User</button>
-  </form>
+        <h1>Attendance for {{user}}:</h1>
+        <form @submit.prevent="att">
+        <div id="cal">
+          <b-calendar v-model="value" locale="en-US" class="cal" selected-variant="info" width="35vw" hide-header>
+          <div class="d-flex" dir="ltr">
+            <b-button
+              size="sm"
+              variant="outline-danger"
+              v-if="value"
+              @click="clearDate"
+            >
+              Clear date
+            </b-button>
+            <b-button
+              size="sm"
+              variant="outline-primary"
+              class="ml-auto"
+              @click="setToday"
+            >
+              Set Today
+      </b-button>
+    </div>
+          </b-calendar> 
+        </div>
+        <p id="incorrect">Please select a date in the calendar </p>
+        <br>
+        <div id="buttone"> 
+        <button class="btn btn-primary">Take/View Attendance</button>
+        </div>
+        </form>
 </div>
 </template>
 
-<style>
-    #cal{
+<style scoped>
+    #cal, #buttone{
         text-align: center; 
-        height: 50vh; 
     }
     .cal {
-      height: 500px; 
       border: 1px red; 
     }
 
-    .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
+    h1 {
+      font-family: Roboto, Open Sans, sans-serif; 
+      color: #3d5a80; 
+      padding: 20px;
+      text-align: left; 
+    }
 
-/* Modal Content */
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-}
+    #buttone button{
+      width: 15vw;
+      margin-top: -5vh;  
+    }
 
-/* The Close Button */
-.close {
-  color: #aaaaaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
+    #whole-page{
+      height: 100vh;
+    }
 
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
+    #incorrect {
+      text-align: center; 
+      display: none; 
+    }
+
 </style>
   
   <script> 
     export default {
         mounted() {
             this.checkAccount()
-
-              // Get the modal
-              this.modal = document.getElementById("myModal");
-
-              // Get the button that opens the modal
-              this.btn = document.getElementById("myBtn");
-
-              // Get the <span> element that closes the modal
-              this.span = document.getElementsByClassName("close")[0];
 
               
         },
@@ -141,24 +130,17 @@
         },
         att(){
           if(this.value == ''){
-            alert("SILLY BOII You must select a date!");
+            document.getElementById("incorrect").style.display = "block"; 
           }else{
             this.$router.push({name: 'attendance', params: { id: this.value }});
           }
         },
-        addUser(){
-          alert(this.attendee.name);
-          this.attendee.user = this.user;
-          
-          let uri = 'http://65.92.152.100:4000/attendance/add';
-          this.axios.post(uri, this.attendee).then(() => {
-          });
+        setToday() {
+          const now = new Date()
+          this.value = new Date(now.getFullYear(), now.getMonth(), now.getDate())
         },
-        btnClick() {
-          this.modal.style.display = "block";
-        },
-        spanClick() {
-          this.modal.style.display = "none";
+        clearDate() {
+          this.value = ''
         }
       }
     }
