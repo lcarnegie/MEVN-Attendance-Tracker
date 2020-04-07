@@ -5,7 +5,10 @@ const PORT = 4000;
 const cors = require('cors');
 const mongoose = require('mongoose');
 const config = require('./DB.js');
+const attendanceRoute = require('./attendance.route');
 const loginRoute = require('./login.route');
+
+
 
 mongoose.Promise = global.Promise;
 mongoose.connect(config.DB, { useNewUrlParser: true }).then(
@@ -18,6 +21,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use('/login', loginRoute);
+app.use('/attendance', attendanceRoute);
+
 
 app.listen(PORT, function(){
   console.log('Server is running on Port:',PORT);

@@ -11,6 +11,7 @@ loginRoute.route('/add').post(function (req, res) {
       console.log(user);
   if(user == null){
     let post = new LInfo(req.body);  
+    post.dates = [];
     console.log(post);
     post.save()
     .then(() => {
@@ -47,4 +48,36 @@ loginRoute.route('/post').post(function (req, res) {
       }
     });
   });
+
+
+  loginRoute.route('/getdates').post(function (req, res) {
+    var username = req.body.user;
+    LInfo.findOne({user: username}, function (err, post){
+        if(err) {
+          res.json(err);
+        }
+        res.json(post);
+    });
+  });
+
+  loginRoute.route('/update').post(function (req, res){
+
+    var username = req.body.user;
+    var dates = req.body.dates;
+
+    Att.findOne({user: username}, function(err, post) {
+      if (!post)
+        res.status(404).send("data is not found");
+      else {
+          //console.log(post);
+          post.dates = dates;
+          post.save().then(() => {
+            res.json('Update complete');
+        })
+        .catch(() => {
+              res.status(400).send("unable to update the database");
+        });
+      }
+  });
+});
 module.exports = loginRoute;
