@@ -35,10 +35,11 @@
   </b-navbar>
 </div>
 
-        <h1>Attendance for {{user}}:</h1>
+        <h1>Attendance Calendar for {{user}}:</h1>
         <form @submit.prevent="att">
+        <br><br><br>
         <div id="cal">
-          <b-calendar v-model="value" locale="en-US" class="cal" selected-variant="info" width="35vw" hide-header>
+          <b-calendar v-model="value" locale="en-US" class="cal" selected-variant="primary" width="35vw" hide-header>
           <div class="d-flex" dir="ltr">
             <b-button
               size="sm"
@@ -46,7 +47,7 @@
               v-if="value"
               @click="clearDate"
             >
-              Clear date
+            Clear date
             </b-button>
             <b-button
               size="sm"
