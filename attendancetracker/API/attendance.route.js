@@ -17,7 +17,7 @@ let Att = require('./attendee.model');
 
   attendanceRoute.route('/attendees').post(function (req, res) {
     let username = req.body.user;
-    console.log(username)
+    //console.log(username)
     Att.find({user: username}, function (err, posts){
         if(err) {
           res.json(err);
@@ -29,7 +29,7 @@ let Att = require('./attendee.model');
 
   attendanceRoute.route('/getById').post(function (req, res) {
     let username = req.body.user;
-    console.log(username)
+    //console.log(username)
     Att.find({user: username}, function (err, posts){
         if(err) {
           res.json(err);

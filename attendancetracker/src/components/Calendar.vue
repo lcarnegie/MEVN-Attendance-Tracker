@@ -34,12 +34,27 @@
     </b-collapse>
   </b-navbar>
 </div>
-
-        <h1>Attendance Calendar for {{user}}:</h1>
+        <center>
+        <div class="container">
+        <div id="" style="width: 35%; float:left; margin:10px;" class="box">
+        <h3>Attendance Calendar for {{user}}</h3>
+        <ul style="text-align: left;">
+          <li><b>-</b> Get started by creating some club members on the <a href="/attendees">"Manage Club Members"</a> page. </li>
+          <br>
+          <li><b>-</b> Use the calendar below to select a date to take attendance.</li>
+          <br>
+          <li><b>-</b> A day with attendance taken will be highlighted in blue. </li>
+        </ul>
+  
+        </div>
+        
+        <div id="" style="width: 60%; float:left; margin:10px;" class="box">
         <form @submit.prevent="att">
-        <br><br><br>
         <div id="cal">
-          <b-calendar v-model="value" locale="en-US" class="cal" selected-variant="primary" width="35vw" hide-header>
+        <div v-if="!dates"><center>Calendar loading please wait...</center></div>
+        <div v-else>
+          
+          <b-calendar v-model="value" locale="en-US" class="cal" selected-variant="primary" width="30vw" :date-info-fn="dateClass">
           <div class="d-flex" dir="ltr">
             <b-button
               size="sm"
@@ -59,13 +74,30 @@
       </b-button>
     </div>
           </b-calendar> 
-        </div>
+          </div>
+          </div>
+        
         <p id="incorrect">Please select a date in the calendar </p>
         <br>
         <div id="buttone"> 
         <button class="btn btn-primary">Take/View Attendance</button>
         </div>
         </form>
+        </div>
+        <br>
+        <br>
+        </div>
+
+        <div id="calcontainer" style="border: 0.25px solid grey;">
+        <h3>Club Attendance</h3>
+        <div v-if="chartData.length == 1"><center>You haven't taken any attendance yet! Take some to view club performance.</center></div>
+        <div v-else>
+        <GChart type="LineChart" :data="chartData" :options="chartOptions" id="graph" style=""/>
+        </div>
+        </div>
+        
+        </center>
+        
 </div>
 </template>
 
@@ -90,7 +122,8 @@
     }
 
     #whole-page{
-      height: 100vh;
+      height: 100%;
+      text-align: center;
     }
 
     #incorrect {
@@ -98,14 +131,43 @@
       display: none; 
     }
 
+    #calcontainer{
+      background-color: white;
+      width: 75%;
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    .box{
+      border: 0.25px solid grey;
+    }
+    
+
 </style>
   
   <script> 
     export default {
-        mounted() {
+        created() {
             this.checkAccount()
 
+            var ldata = {user: this.user};
+            let url2 = 'http://localhost:4000/login/getdates';
+            this.axios.post(url2, ldata).then(res => {
               
+              var datearr = res.data.dates;
+              console.log(res.data.dates)
+              this.dates = [];
+              for(var i =0; i<datearr.length; i++){
+                this.dates[i] = datearr[i].date;
+                this.chartData[i+1] = [this.dates[i], datearr[i].numPresent];
+              }
+            })
+        },
+        updated(){
+          var body = document.body, html = document.documentElement;
+          var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+          document.getElementById("whole-page").style.height = height + "px";
         },
       data() {
         return {
@@ -115,7 +177,18 @@
           attendee: {}, 
           modal: null, 
           btn: null, 
-          span: null
+          span: null,
+          dates: null,
+          chartData: [
+              ["Dates", "Attendances"]
+          ],
+            chartOptions: {
+              chart: {
+              title: "Club Performance",
+              width: 100, 
+              height: 400
+            }
+          }
         }
       },
       methods: {
@@ -142,6 +215,23 @@
         },
         clearDate() {
           this.value = ''
+        },
+        dateClass(ymd, date) {
+          var year = 1900 + date.getYear();
+          var month = date.getMonth() + 1 + "";
+          if(month.length == 1){
+            month = "0" + month;
+          }
+
+          var day = date.getDate() + "";
+
+          if(day.length == 1){
+            day = "0" + day;
+          }
+          
+          var str = year + "-" + month + "-" + day
+
+          return this.dates.includes(str) ? 'table-info' : ''
         }
       }
     }

@@ -40,7 +40,7 @@
         <div v-if="chartData.length == 1"><center>You have no members yet! Add some to get insights. <br>Chart Loading, please wait...</center></div>
         <div v-else>
         <center>
-        <GChart type="ColumnChart" :data="chartData" :options="chartOptions" id="graph" /></center></div>
+        <GChart style="max-width: 70%;" type="ColumnChart" :data="chartData" :options="chartOptions" id="graph" /></center></div>
         <br>
         <center>
         <table id="presences">
@@ -146,8 +146,7 @@ export default {
           ],
             chartOptions: {
               chart: {
-              title: "Company Performance",
-              subtitle: "Sales, Expenses, and Profit: 2014-2017",
+              title: "Club Performance",
               width: 100, 
               height: 400
             }
@@ -157,7 +156,7 @@ export default {
       methods: {
           getAttById(){
             var data = {user: this.user};
-            let uri = 'http://65.92.152.100:4000/attendance/getById';
+            let uri = 'http://localhost:4000/attendance/getById';
             this.axios.post(uri, data).then(res => {
                 console.log(res);
                 this.attendees = res.data;
@@ -165,11 +164,12 @@ export default {
                 for(var i = 0; i < this.attendees.length; i++){
                 this.chartData[i+1] = [this.attendees[i].name, parseInt(this.attendees[i].presences.length, 10)]
                 }
+                console.log(this.chartData);
           });
           },
           getAttByPresences(){
               var data = {user: this.user};
-            let uri = 'http://65.92.152.100:4000/attendance/getById';
+            let uri = 'http://localhost:4000/attendance/getById';
             this.axios.post(uri, data).then(res => {
                 console.log(res);
                 this.attendees = res.data;
@@ -183,7 +183,7 @@ export default {
           },
           getAttByAbsenses(){
               var data = {user: this.user};
-            let uri = 'http://65.92.152.100:4000/attendance/getById';
+            let uri = 'http://localhost:4000/attendance/getById';
             this.axios.post(uri, data).then(res => {
                 console.log(res);
                 this.attendees = res.data;

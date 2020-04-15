@@ -4,15 +4,15 @@ const loginRoute = express.Router();
 let LInfo = require('./user.model');
 
 loginRoute.route('/add').post(function (req, res) {
-  console.log(req.body);
+  //console.log(req.body);
   var username = req.body.user;
   LInfo.findOne({user: username},
     function(err, user){
-      console.log(user);
+      //console.log(user);
   if(user == null){
     let post = new LInfo(req.body);  
     post.dates = [];
-    console.log(post);
+    //console.log(post);
     post.save()
     .then(() => {
       res.status(200).send("Account added successfully");
@@ -23,7 +23,7 @@ loginRoute.route('/add').post(function (req, res) {
   }
   else {
     res.json(user);
-    console.log("user");
+    //console.log("user");
   }
 });
 });
@@ -33,18 +33,18 @@ loginRoute.route('/post').post(function (req, res) {
     //console.log(res);
     var username = req.body.user;
     var password = req.body.pass;
-    console.log(username);
-    console.log(password);
+    //console.log(username);
+    //console.log(password);
       LInfo.findOne({user: username, pass: password},
         function(err, user){
-          console.log(user);
+          //console.log(user);
       if(!user){
         res.json(null);
-        console.log("err");
+        //console.log("err");
       }
       else {
         res.json(user);
-        console.log("user");
+        //console.log("user");
       }
     });
   });
@@ -65,7 +65,7 @@ loginRoute.route('/post').post(function (req, res) {
     var username = req.body.user;
     var dates = req.body.dates;
 
-    Att.findOne({user: username}, function(err, post) {
+    LInfo.findOne({user: username}, function(err, post) {
       if (!post)
         res.status(404).send("data is not found");
       else {
@@ -80,4 +80,7 @@ loginRoute.route('/post').post(function (req, res) {
       }
   });
 });
+
+
+
 module.exports = loginRoute;

@@ -123,7 +123,7 @@ export default {
             this.checkAccount();
           this.post.user = this.user;
           //alert(this.post.user);
-          let uri = 'http://65.92.152.100:4000/attendance/attendees';
+          let uri = 'http://localhost:4000/attendance/attendees';
           this.axios.post(uri, this.post).then(res => {
           this.attendees = res.data;
           console.log(this.attendees);
@@ -152,7 +152,7 @@ export default {
         del(id){
             this.post.id = id;
             //alert(id);
-            let uri = 'http://65.92.152.100:4000/attendance/delete';
+            let uri = 'http://localhost:4000/attendance/delete';
             this.axios.post(uri, this.post).then(() => {
                 location.reload();
             });
@@ -161,7 +161,7 @@ export default {
           //alert(this.attendee.name);
           this.attendee.user = this.user;
           
-          let uri = 'http://65.92.152.100:4000/attendance/add';
+          let uri = 'http://localhost:4000/attendance/add';
           this.axios.post(uri, this.attendee).then(() => {
               location.reload();
           });

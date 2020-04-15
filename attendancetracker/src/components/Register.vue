@@ -164,12 +164,12 @@ input:focus {
         methods: {
             add(){
             if(this.post.user != "" || this.post.email != "" || this.post.pass != ""){ 
-            let uri = 'http://65.92.152.100:4000/login/add';
+            let uri = 'http://localhost:4000/login/add';
             this.axios.post(uri, this.post).then(res => {
               console.log(res);
               if(!res.data.user){
                 alert("Success! Account Created!");
-                this.$router.push({name: '/'});
+                this.$router.push({name: 'login'});
               }else{
                 alert("Error username already in use!")
               }

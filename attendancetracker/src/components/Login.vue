@@ -155,7 +155,7 @@ input:focus {
           },
         methods: {
             add(){
-            let uri = 'http://65.92.152.100:4000/login/post';
+            let uri = 'http://localhost:4000/login/post';
             this.axios.post(uri, this.post).then(res => {
               if(!res.data){
                  document.getElementById("incorrect").style.display = "block"; 

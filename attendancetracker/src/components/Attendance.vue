@@ -224,24 +224,16 @@
               this.$router.push({name: 'login'});
           }else{
           this.post.user = this.user;
-          //alert(this.post.user);
-          let uri = 'http://65.92.152.100:4000/attendance/attendees';
+          let uri = 'http://localhost:4000/attendance/attendees';
           this.axios.post(uri, this.post).then(res => {
           this.attendees = res.data;
-          //console.log(this.attendees);
           for(var element of this.attendees){
-            //console.log(element);
             if(element.presences.indexOf(this.$route.params.id) > -1){
               this.presentNames.push(element._id);
-              //document.getElementById(element + ":pcheckbox").style.backgroundColor = "green";
             }else{
               this.absentNames.push(element._id);
-              //document.getElementById(element + ":acheckbox").style.backgroundColor = "red";
             }
-            
           }
-          
-          //console.log(this.presentNames);
         });
       }
         },
@@ -258,10 +250,7 @@
           presentNames: [],
           checked: true,
           post: {},
-          user: null,
-          dismissSecs: 10,
-          dismissCountDown: 0,
-          showDismissibleAlert: false
+          user: null
         }
       },
       methods: {
@@ -273,86 +262,131 @@
           //iterate through all present, then all absent, and get array of that id user, then check for the current day, if it contains delete, and append the date to the correct array
           for(var element of this.presentNames){
             var test = {number: element};
-            let uri = 'http://65.92.152.100:4000/attendance/getarr';
+            let uri = 'http://localhost:4000/attendance/getarr';
             this.axios.post(uri, test).then(res => {
               var arr = res.data.presences;
               arr = arr.filter(e => e !== this.$route.params.id);
-              //console.log(arr);
               
               var arr2 = res.data.absenses;
               arr2 = arr2.filter(e => e !== this.$route.params.id);
-              //console.log(arr2);
 
               
               arr.push(this.$route.params.id);
               
               this.post.presences = arr;
               this.post.absenses = arr2;
-              //console.log(res.data._id);
-              var test2 = {id: res.data._id, presences: arr, absenses: arr2};
-              //console.log(test2);
-              let url = 'http://65.92.152.100:4000/attendance/post';
-              this.axios.post(url, test2).then(res => {
-                console.log(res);
-                
-                /*
-                var ldata = {user: this.user};
-                let url2 = 'http://65.92.152.100:4000/login/getdates';
-                this.axios.post(url2, ldata).then(res => {
-                  console.log(res.data);
-                  var arrd = res.data.dates;
-                  arrd = arrd.filter(e => e !== this.$route.params.id, this.date);
-                  var ddata = {dates: arrd, user: this.user};
-                  arrd.push(ddata);
-                  console.log(arrd);
 
-                  let url3 = 'http://65.92.152.100:4000/login/update';
-                  this.axios.post(url3, ddata).then(res => {
+              var test2 = {id: res.data._id, presences: arr, absenses: arr2};
+
+              let url = 'http://localhost:4000/attendance/post';
+              this.axios.post(url, test2).then(res => {
+                console.log("Arr: " + res);
+                
+                // start of user updating
+            
+                var ldata = {user: this.user};
+                let url2 = 'http://localhost:4000/login/getdates';
+                this.axios.post(url2, ldata).then(res => {
+                  //console.log(res.data);
+                  var arrd = res.data.dates;
+                  //arrd = arrd.filter(e => e !== this.$route.params.id, this.date);
+                  for(var i = 0; i<arrd.length; i++){
+                    if(arrd[i].date == this.$route.params.id){
+                      arrd[i] = null;
+                    }
+                  }
+
+                  arrd = arrd.filter(function (el) {
+                    return el != null;
+                  });
+                  
+                  var ddata = {date: this.$route.params.id, numPresent: this.presentNames.length};
+                  arrd.push(ddata);
+                  //console.log(arrd);
+
+                  var userPostData = {dates: arrd, user: this.user}
+
+                  let url3 = 'http://localhost:4000/login/update';
+                  this.axios.post(url3, userPostData).then(res => {
+                    //console.log("URL 3");
                     console.log(res);
+                    this.$router.push({name: 'calendar'});
                   })
                 })
-                */
 
               })
               
             })
           }
-          //alert("hello");
-
-          for(var element1 of this.absentNames){
+          
+          if(this.absentNames.length != 0){
+            //alert("absences")
+            for(var element1 of this.absentNames){
             var test1 = {number: element1};
-            let uri1 = 'http://65.92.152.100:4000/attendance/getarr';
+            let uri1 = 'http://localhost:4000/attendance/getarr';
             this.axios.post(uri1, test1).then(res => {
               var arrr = res.data.absenses;
               arrr = arrr.filter(e => e !== this.$route.params.id);
-              //console.log(arrr);
               
               var arrr2 = res.data.presences; 
               arrr2 = arrr2.filter(e => e !== this.$route.params.id);
 
-              
               arrr.push(this.$route.params.id);
               
               this.post.absenses = arrr;
-              //console.log(res.data._id);
+
               var testt2 = {id: res.data._id, presences: arrr2, absenses: arrr};
-              //console.log(test2);
-              let url1 = 'http://65.92.152.100:4000/attendance/post';
+
+              let url1 = 'http://localhost:4000/attendance/post';
               this.axios.post(url1, testt2).then(res => {
-                console.log(res);
-                this.$router.push({name: 'calendar'});
+                console.log("Arr2: " + res);
+                
               })
               
             })
+          }
+            // start of user updating
+            
+                var ldata = {user: this.user};
+                let url2 = 'http://localhost:4000/login/getdates';
+                this.axios.post(url2, ldata).then(res => {
+                  //console.log(res.data);
+                  var arrd = res.data.dates;
+                  //arrd = arrd.filter(e => e !== this.$route.params.id, this.date);
+                  for(var i = 0; i<arrd.length; i++){
+                    if(arrd[i].date == this.$route.params.id){
+                      arrd[i] = null;
+                    }
+                  }
+
+                  arrd = arrd.filter(function (el) {
+                    return el != null;
+                  });
+                  
+                  var ddata = {date: this.$route.params.id, numPresent: this.presentNames.length};
+                  arrd.push(ddata);
+                  console.log(arrd);
+
+                  var userPostData = {dates: arrd, user: this.user}
+
+                  let url3 = 'http://localhost:4000/login/update';
+                  this.axios.post(url3, userPostData).then(res => {
+                    console.log("URL 3");
+                    console.log(res);
+                    this.$router.push({name: 'calendar'});
+                  })
+                })
+
+
+
           }
         },
         test(input, type){
           var letter;
           if(type == "a"){
-            //alert(input);
-            //console.log(this.presentNames);
+
             this.presentNames = this.presentNames.filter(e => e !== input);
-            //console.log(this.presentNames);
+
             letter = "p";
             document.getElementById(input + ":acheckbox").style.backgroundColor = "red";
             document.getElementById(input + ":pcheckbox").style.backgroundColor = "#6CD182";
