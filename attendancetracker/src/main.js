@@ -32,7 +32,7 @@ import Register from './components/Register.vue';
 import Attendance from './components/Attendance.vue';
 import Insights from './components/Insights.vue';
 import Attendees from './components/Attendees.vue';
-
+import Clubs from './components/Clubs.vue';
 
 const routes = [
   {
@@ -64,6 +64,11 @@ const routes = [
     name: 'Attendees',
     path: '/attendees',
     component: Attendees
+  },
+  {
+    name: 'Clubs',
+    path: '/clubs',
+    component: Clubs
   },
 ];
 

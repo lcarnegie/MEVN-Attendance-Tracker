@@ -5,7 +5,7 @@
 
       <div>
   <b-navbar toggleable="lg" type="light" variant="light">
-    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker®</b-navbar-brand>
+    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -18,6 +18,7 @@
           <b-dropdown-item href="/insights/absences">By Absences</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-nav-item href="/attendees">Manage Club Members</b-nav-item>
+        <b-nav-item href="/clubs">Select Club</b-nav-item>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
@@ -37,11 +38,13 @@
         <center>
         <div class="container">
         <div id="" style="width: 35%; float:left; margin:10px;" class="box">
-        <h3>Attendance Calendar for {{user}}</h3>
+        <h3>Welcome to Attendance Tracker, {{user}}!</h3>
         <ul style="text-align: left;">
-          <li><b>-</b> Get started by creating some club members on the <a href="/attendees">"Manage Club Members"</a> page. </li>
+          <li><b>-</b> Get started by adding clubs on the <a href="/clubs">"Select Club"</a> page. </li>
           <br>
-          <li><b>-</b> Use the calendar below to select a date to take attendance.</li>
+          <li><b>-</b> Create some club members on the <a href="/attendees">"Manage Club Members"</a> page. </li>
+          <br>
+          <li><b>-</b> Use the calendar to select a date to take attendance.</li>
           <br>
           <li><b>-</b> A day with attendance taken will be highlighted in blue. </li>
         </ul>
@@ -53,7 +56,7 @@
         <div id="cal">
         <div v-if="!dates"><center>Calendar loading please wait...</center></div>
         <div v-else>
-          
+          <h2>Calendar for {{club.clubname}}</h2>
           <b-calendar v-model="value" locale="en-US" class="cal" selected-variant="primary" width="30vw" :date-info-fn="dateClass">
           <div class="d-flex" dir="ltr">
             <b-button
@@ -88,8 +91,8 @@
         <br>
         </div>
 
-        <div id="calcontainer" style="border: 0.25px solid grey;">
-        <h3>Club Attendance</h3>
+        <div id="calcontainer" style="width: 70%">
+        <h3>{{club.clubname}} Attendance</h3>
         <div v-if="chartData.length == 1"><center>You haven't taken any attendance yet! Take some to view club performance.</center></div>
         <div v-else>
         <GChart type="LineChart" :data="chartData" :options="chartOptions" id="graph" style=""/>
@@ -140,7 +143,6 @@
       display: inline-block;
     }
     .box{
-      border: 0.25px solid grey;
     }
     
 
@@ -151,9 +153,15 @@
         created() {
             this.checkAccount()
 
-            var ldata = {user: this.user};
-            let url2 = 'http://localhost:4000/login/getdates';
-            this.axios.post(url2, ldata).then(res => {
+            let url9 = 'http://192.168.1.11:4000/clubs/getbyID';
+            this.post.number = this.selected;
+
+            this.axios.post(url9, this.post).then(res => {
+              this.club = res.data;
+
+              var ldata = {user: this.club._id};
+              let url2 = 'http://192.168.1.11:4000/clubs/getdates';
+              this.axios.post(url2, ldata).then(res => {
               
               var datearr = res.data.dates;
               console.log(res.data.dates)
@@ -163,6 +171,9 @@
                 this.chartData[i+1] = [this.dates[i], datearr[i].numPresent];
               }
             })
+            })
+
+            
         },
         updated(){
           var body = document.body, html = document.documentElement;
@@ -173,6 +184,9 @@
         return {
           value: '',
           context: null,
+          selected: {},
+          club: {},
+          post: {},
           user: null,
           attendee: {}, 
           modal: null, 
@@ -194,10 +208,13 @@
       methods: {
         logout() {
             document.cookie = "user= ; expires=Sun, 29 Dec 2019 00:00:00 UTC; path=/;";
+            document.cookie = "club= ; expires=Sun, 29 Dec 2019 00:00:00 UTC; path=/;";
             this.$router.push({name: 'login'});
         },
         checkAccount(){
-            this.user = document.cookie.substring(document.cookie.indexOf("=")+1);
+          console.log(document.cookie);
+            this.user = document.cookie.substring(document.cookie.indexOf("=")+1, document.cookie.indexOf(";"));
+            this.selected = document.cookie.substring(document.cookie.indexOf(";")+7);
             if(document.cookie == ""){
                 this.$router.push({name: 'login'});
             }

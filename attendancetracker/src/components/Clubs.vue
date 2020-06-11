@@ -37,23 +37,23 @@
 
 
 
-      <h1 style="margin-top: 10px;"> Manage  {{club.clubname}} Members</h1>
+      <h1 style="margin-top: 10px;"> Manage Clubs</h1>
         <table>
 
             <tr>
-                <th>Member Name</th>
+                <th>Club Name (# Days)</th>
             </tr>
 
-            <tr  v-for="attendee in attendees" :key="attendee._id">
-                <td>{{attendee.name}}</td>
-                <td id= "deletebuttone"><button class="btn btn-danger" @click.prevent="del(attendee._id)">Delete</button></td>
+            <tr  v-for="club in clubs" :key="club._id">
+                <td><span v-if="selected == club._id"><b>{{club.clubname}} ({{club.dates.length}})</b></span> <span v-else>{{club.clubname}} ({{club.dates.length}})</span> </td>
+                <td id= "deletebuttone"><button class="btn btn-success" @click.prevent="sel(club._id)">Select</button> <button class="btn btn-danger" @click.prevent="del(club._id)">Delete</button></td>
             </tr>
             <tr>
               <td colspan="2" id="buttone">
-                <span><b>Add a Member: </b></span>
+                <span><b>Add a Club: </b></span>
                 <form @submit.prevent="addUser"> 
-                <input type="text" id="name" v-model="attendee.name" class="text-input">
-                <button id="buttone" class="btn btn-lg btn-primary">Add Member</button>
+                <input type="text" id="name" v-model="club.name" class="text-input">
+                <button id="buttone" class="btn btn-lg btn-primary">Add Club</button>
                 </form>
               </td>
             </tr>
@@ -121,35 +121,23 @@ th{
 <script>
 export default {
         mounted() {
-          this.checkAccount();
-              let url9 = 'http://192.168.1.11:4000/clubs/getbyID';
-              this.post2.number = this.selected;
-
-              this.axios.post(url9, this.post2).then(res => {
-              this.club = res.data;
-
-              this.post.user = this.club._id;
-              //alert(this.post.user);
-              let uri = 'http://192.168.1.11:4000/attendance/attendees';
-              this.axios.post(uri, this.post).then(res => {
-              this.attendees = res.data;
-              console.log(this.attendees);
+            this.checkAccount();
+          this.post.user = this.user;
+          //alert(this.post.user);
+          let uri = 'http://192.168.1.11:4000/clubs/clubs';
+          this.axios.post(uri, this.post).then(res => {
+          this.clubs = res.data;
+          //console.log(this.clubs);
           });
-        })
-
-
-          
 
         },
       data() {
         return {
           user: null,
-          attendees: [],
+          clubs: [],
           post: {},
-          post2: {},
-          selected: {},
           club: {},
-          attendee: {}
+          selected: {},
         }
       },
       methods: {
@@ -161,6 +149,7 @@ export default {
         checkAccount(){
             this.user = document.cookie.substring(document.cookie.indexOf("=")+1, document.cookie.indexOf(";"));
             this.selected = document.cookie.substring(document.cookie.indexOf(";")+7);
+            console.log(this.selected);
             if(document.cookie == ""){
                 this.$router.push({name: 'login'});
         }
@@ -168,20 +157,33 @@ export default {
         del(id){
             this.post.id = id;
             //alert(id);
-            let uri = 'http://192.168.1.11:4000/attendance/delete';
+            if(this.post.id == this.selected){
+                alert("You cannot delete your selected club!")
+            }else{
+            let uri = 'http://192.168.1.11:4000/clubs/delete';
+            if(this.clubs.length != 1){
             this.axios.post(uri, this.post).then(() => {
                 location.reload();
             });
+            }else{
+                alert("You must have at least one club!");
+            }
+            }
         },
         addUser(){
           //alert(this.attendee.name);
-          this.attendee.user = this.club._id;
-          console.log(this.attendee);
-          let uri = 'http://192.168.1.11:4000/attendance/add';
-          this.axios.post(uri, this.attendee).then(() => {
+          this.club.user = this.user;
+          this.club.clubname = this.club.name;
+          
+          let uri = 'http://192.168.1.11:4000/clubs/add';
+          this.axios.post(uri, this.club).then(() => {
               location.reload();
           });
-        }
+        },
+        sel(id){
+            document.cookie = "club= " + id + ";";
+            location.reload();
+        },
       }
 }
 </script>

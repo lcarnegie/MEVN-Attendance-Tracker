@@ -5,12 +5,15 @@ let Att = require('./attendee.model');
 
   attendanceRoute.route('/add').post(function (req, res) {
     let post = new Att(req.body);
+    //console.log(post);
     post.save()
       .then(() => {
         res.status(200).send("account created");
+        //console.log("success");
       })
       .catch(() => {
         res.status(400).send("unable to save to database");
+        //console.log("fail")
       });
   });
 
@@ -40,7 +43,7 @@ let Att = require('./attendee.model');
 
 
   attendanceRoute.route('/getarr').post(function (req, res) {
-    console.log(req.body.number);
+    //console.log(req.body.number);
     var id = req.body.number;
     //console.log(id)
     Att.findById(id, function (err, arr){

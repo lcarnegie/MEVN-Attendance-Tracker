@@ -155,7 +155,7 @@ input:focus {
           },
         methods: {
             add(){
-            let uri = 'http://localhost:4000/login/post';
+            let uri = 'http://192.168.1.11:4000/login/post';
             this.axios.post(uri, this.post).then(res => {
               if(!res.data){
                  document.getElementById("incorrect").style.display = "block"; 
@@ -163,8 +163,15 @@ input:focus {
                  document.getElementsByClassName("text-input")[1].style.border = "3px solid red"; 
               }else{
                 document.getElementById("incorrect").style.display = "none"; 
-                this.$router.push({name: 'calendar'});
+                
                 document.cookie = "user="+res.data.user;
+
+                let url = 'http://192.168.1.11:4000/clubs/getone';
+                  this.axios.post(url, this.post).then(res2 => {
+                    console.log(res2);
+                    document.cookie = "club=" + res2.data._id + ";";
+                    this.$router.push({name: 'calendar'});
+                })
               }
             });
           }

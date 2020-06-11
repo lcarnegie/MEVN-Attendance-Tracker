@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const config = require('./DB.js');
 const attendanceRoute = require('./attendance.route');
 const loginRoute = require('./login.route');
-
+const clubsRoute = require('./club.route');
 
 
 mongoose.Promise = global.Promise;
@@ -22,6 +22,7 @@ app.use(bodyParser.json());
 
 app.use('/login', loginRoute);
 app.use('/attendance', attendanceRoute);
+app.use('/clubs', clubsRoute);
 
 
 app.listen(PORT, function(){

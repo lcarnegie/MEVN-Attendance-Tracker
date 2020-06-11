@@ -5,7 +5,7 @@
         <div class="login-form">
           <h1 class="title">Register</h1>
           <div class="field">
-          <label class="label">Club Name (No spaces)</label>
+          <label class="label">Username</label>
             <div class="control">
               <input type="text" v-model="post.user" class="text-input">
             </div> 
@@ -35,6 +35,46 @@
   </div> 
 </div>
   </template>
+
+<script>
+    export default {
+      data() {
+            return {
+              post: {},
+              club: {},
+            }
+          },
+        methods: {
+            add(){
+            if(this.post.user != "" || this.post.email != "" || this.post.pass != ""){ 
+            let uri = 'http://192.168.1.11:4000/login/add';
+            this.axios.post(uri, this.post).then(res => {
+              console.log(res);
+              if(!res.data.user){
+                alert("Success! Account Created!");
+
+                this.club.user = this.post.user;
+                this.club.clubname = "First";
+          
+                let url = 'http://192.168.1.11:4000/clubs/add';
+                this.axios.post(url, this.club).then(() => {
+                  console.log("Added First Club")
+                })
+
+                this.$router.push({name: 'login'});
+              }else{
+                alert("Error username already in use!")
+              }
+            });
+            
+            }else{
+              alert("Fields must not be empty!")
+            }
+        }
+    }
+  }
+  </script>
+
 
   <style scoped>
   #whole-page {
@@ -154,31 +194,4 @@ input:focus {
     
   </style>
 
-  <script>
-    export default {
-      data() {
-            return {
-              post: {}
-            }
-          },
-        methods: {
-            add(){
-            if(this.post.user != "" || this.post.email != "" || this.post.pass != ""){ 
-            let uri = 'http://localhost:4000/login/add';
-            this.axios.post(uri, this.post).then(res => {
-              console.log(res);
-              if(!res.data.user){
-                alert("Success! Account Created!");
-                this.$router.push({name: 'login'});
-              }else{
-                alert("Error username already in use!")
-              }
-            });
-            
-            }else{
-              alert("Fields must not be empty!")
-            }
-        }
-    }
-  }
-  </script>
+  

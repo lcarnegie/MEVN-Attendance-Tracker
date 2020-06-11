@@ -4,7 +4,7 @@
 
     <div>
   <b-navbar toggleable="lg" type="light" variant="light">
-    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker®</b-navbar-brand>
+    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -17,6 +17,7 @@
           <b-dropdown-item href="/insights/absences">By Absences</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-nav-item href="/attendees">Manage Club Members</b-nav-item>
+        <b-nav-item href="/clubs">Select Club</b-nav-item>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
@@ -35,8 +36,8 @@
 </div>
 
 
-
-    <h1 style="margin-top: 10px;">{{ header }}</h1>
+  <h1 style="margin-top: 10px;">{{club.clubname}} Insights Page</h1>
+    <h2 style="margin-top: 10px; text-align: center;">{{ header }}</h2>
         <div v-if="chartData.length == 1"><center>You have no members yet! Add some to get insights. <br>Chart Loading, please wait...</center></div>
         <div v-else>
         <center>
@@ -115,8 +116,15 @@ th{
 
 export default {
         mounted() {
-            this.user = document.cookie.substring(document.cookie.indexOf("=")+1);
-            if(document.cookie == ""){
+            this.user = document.cookie.substring(document.cookie.indexOf("=")+1, document.cookie.indexOf(";"));
+            this.selected = document.cookie.substring(document.cookie.indexOf(";")+7);
+            let url = 'http://192.168.1.11:4000/clubs/getbyID';
+            let temp = {number: this.selected};
+            this.axios.post(url, temp).then(res => {
+              this.club = res.data;
+              //console.log(this.clubs);
+
+              if(document.cookie == ""){
                 this.$router.push({name: 'login'});
            }
             
@@ -132,7 +140,10 @@ export default {
                 this.getAttByAbsenses();
                 
             }
-            console.log(this.$route.params.method)
+            //console.log(this.$route.params.method)
+          })
+
+            
 
             
         },
@@ -141,6 +152,7 @@ export default {
           attendees: [],
           user: "",
           header: "",
+          club: {},
           chartData: [
               ["User", "Attendances"]
           ],
@@ -155,8 +167,8 @@ export default {
       },
       methods: {
           getAttById(){
-            var data = {user: this.user};
-            let uri = 'http://localhost:4000/attendance/getById';
+            var data = {user: this.selected};
+            let uri = 'http://192.168.1.11:4000/attendance/getById';
             this.axios.post(uri, data).then(res => {
                 console.log(res);
                 this.attendees = res.data;
@@ -168,8 +180,8 @@ export default {
           });
           },
           getAttByPresences(){
-              var data = {user: this.user};
-            let uri = 'http://localhost:4000/attendance/getById';
+              var data = {user: this.selected};
+            let uri = 'http://192.168.1.11:4000/attendance/getById';
             this.axios.post(uri, data).then(res => {
                 console.log(res);
                 this.attendees = res.data;
@@ -182,8 +194,8 @@ export default {
           });
           },
           getAttByAbsenses(){
-              var data = {user: this.user};
-            let uri = 'http://localhost:4000/attendance/getById';
+              var data = {user: this.selected};
+            let uri = 'http://192.168.1.11:4000/attendance/getById';
             this.axios.post(uri, data).then(res => {
                 console.log(res);
                 this.attendees = res.data;

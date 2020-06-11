@@ -2,7 +2,7 @@
     <div v-if="attendees.length == 0" id="none">
     <div>
   <b-navbar toggleable="lg" type="light" variant="light">
-    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker®</b-navbar-brand>
+    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -15,6 +15,7 @@
           <b-dropdown-item href="/insights/absences">By Absences</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-nav-item href="/attendees">Manage Club Members</b-nav-item>
+        <b-nav-item href="/clubs">Select Club</b-nav-item>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
@@ -45,7 +46,7 @@
 
     <div>
   <b-navbar toggleable="lg" type="light" variant="light">
-    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker®</b-navbar-brand>
+    <b-navbar-brand href="#" style="margin-top: 8px;">Attendance Tracker</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -76,7 +77,7 @@
 </div>
 
 
-      <h1 id="title">Attendance for {{this.$route.params.id}}</h1> 
+      <h1 id="title">{{club.clubname}} Attendance for {{this.$route.params.id}}</h1> 
       <center style="padding-bottom: 1vh; ">*Note: changes are denoted by a darker coloured row.
   </center>
         <div class="attendance">    
@@ -111,8 +112,9 @@
           <tr>
               <td class="buttone" colspan="3">
                 <form @submit.prevent="postAttendance">
-                   <button ><span>Take Attendance</span></button>
+                   <center><button class="button btn btn-success"><span>Take Attendance</span></button> <a href="/calendar" class="button btn btn-danger">Cancel</a></center>
                 </form>
+                
               </td>
           </tr>
         </table>
@@ -192,26 +194,6 @@
   .absentcheckbox {
     background-color: #FF7F7F; 
   }
-
-  .buttone {
-    text-align: center; 
-    border-bottom: none; 
-  }
-
-  .buttone button {
-    background-color: #3D5A80; 
-    border: 1px #3D5A80; 
-    border-radius: 5px; 
-    padding: 1vh; 
-    padding-left: 2vh; 
-    padding-right: 2vh; 
-    color: white;
-    font-family: Roboto, Open Sans, sans-serif;  
-  }
-
-  .buttone button:hover {
-    background-color: #293D56;
-  }
 </style>
   
   <script>
@@ -219,12 +201,20 @@
 
     export default {
         mounted() {
-          this.user = document.cookie.substring(document.cookie.indexOf("=")+1);
+          this.user = document.cookie.substring(document.cookie.indexOf("=")+1, document.cookie.indexOf(";"));
+          this.selected = document.cookie.substring(document.cookie.indexOf(";")+7);
           if(document.cookie == ""){
               this.$router.push({name: 'login'});
           }else{
-          this.post.user = this.user;
-          let uri = 'http://localhost:4000/attendance/attendees';
+          
+          let url9 = 'http://192.168.1.11:4000/clubs/getbyID';
+          this.post2.number = this.selected;
+
+          this.axios.post(url9, this.post2).then(res => {
+          this.club = res.data;
+
+          this.post.user = this.club._id;
+          let uri = 'http://192.168.1.11:4000/attendance/attendees';
           this.axios.post(uri, this.post).then(res => {
           this.attendees = res.data;
           for(var element of this.attendees){
@@ -235,6 +225,9 @@
             }
           }
         });
+          })
+          
+          
       }
         },
         updated(){
@@ -247,6 +240,9 @@
           attendees: [],
           att: {},
           absentNames: [],
+          selected: {},
+          club: {},
+          post2: {},
           presentNames: [],
           checked: true,
           post: {},
@@ -256,13 +252,14 @@
       methods: {
         logout() {
             document.cookie = "user= ; expires=Sun, 29 Dec 2019 00:00:00 UTC; path=/;";
+            document.cookie = "club= ; expires=Sun, 29 Dec 2019 00:00:00 UTC; path=/;";
             this.$router.push({name: 'login'});
         },
         postAttendance(){
           //iterate through all present, then all absent, and get array of that id user, then check for the current day, if it contains delete, and append the date to the correct array
           for(var element of this.presentNames){
             var test = {number: element};
-            let uri = 'http://localhost:4000/attendance/getarr';
+            let uri = 'http://192.168.1.11:4000/attendance/getarr';
             this.axios.post(uri, test).then(res => {
               var arr = res.data.presences;
               arr = arr.filter(e => e !== this.$route.params.id);
@@ -278,14 +275,14 @@
 
               var test2 = {id: res.data._id, presences: arr, absenses: arr2};
 
-              let url = 'http://localhost:4000/attendance/post';
+              let url = 'http://192.168.1.11:4000/attendance/post';
               this.axios.post(url, test2).then(res => {
                 console.log("Arr: " + res);
                 
                 // start of user updating
             
-                var ldata = {user: this.user};
-                let url2 = 'http://localhost:4000/login/getdates';
+                var ldata = {user: this.club._id};
+                let url2 = 'http://192.168.1.11:4000/clubs/getdates';
                 this.axios.post(url2, ldata).then(res => {
                   //console.log(res.data);
                   var arrd = res.data.dates;
@@ -304,9 +301,9 @@
                   arrd.push(ddata);
                   //console.log(arrd);
 
-                  var userPostData = {dates: arrd, user: this.user}
+                  var userPostData = {dates: arrd, user: this.club._id}
 
-                  let url3 = 'http://localhost:4000/login/update';
+                  let url3 = 'http://192.168.1.11:4000/clubs/update';
                   this.axios.post(url3, userPostData).then(res => {
                     //console.log("URL 3");
                     console.log(res);
@@ -323,7 +320,7 @@
             //alert("absences")
             for(var element1 of this.absentNames){
             var test1 = {number: element1};
-            let uri1 = 'http://localhost:4000/attendance/getarr';
+            let uri1 = 'http://192.168.1.11:4000/attendance/getarr';
             this.axios.post(uri1, test1).then(res => {
               var arrr = res.data.absenses;
               arrr = arrr.filter(e => e !== this.$route.params.id);
@@ -337,7 +334,7 @@
 
               var testt2 = {id: res.data._id, presences: arrr2, absenses: arrr};
 
-              let url1 = 'http://localhost:4000/attendance/post';
+              let url1 = 'http://192.168.1.11:4000/attendance/post';
               this.axios.post(url1, testt2).then(res => {
                 console.log("Arr2: " + res);
                 
@@ -347,8 +344,8 @@
           }
             // start of user updating
             
-                var ldata = {user: this.user};
-                let url2 = 'http://localhost:4000/login/getdates';
+                var ldata = {user: this.club._id};
+                let url2 = 'http://192.168.1.11:4000/clubs/getdates';
                 this.axios.post(url2, ldata).then(res => {
                   //console.log(res.data);
                   var arrd = res.data.dates;
@@ -367,9 +364,9 @@
                   arrd.push(ddata);
                   console.log(arrd);
 
-                  var userPostData = {dates: arrd, user: this.user}
+                  var userPostData = {dates: arrd, user: this.club._id}
 
-                  let url3 = 'http://localhost:4000/login/update';
+                  let url3 = 'http://192.168.1.11:4000/clubs/update';
                   this.axios.post(url3, userPostData).then(res => {
                     console.log("URL 3");
                     console.log(res);
